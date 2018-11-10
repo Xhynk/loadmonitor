@@ -1,6 +1,6 @@
 <?php
-	error_reporting( E_ALL );
-	ini_set( 'display_errors', 1 );
+	#error_reporting( E_ALL );
+	#ini_set( 'display_errors', 1 );
 
 	$start        = microtime( true );
 	$load_monitor = new stdClass();
@@ -87,7 +87,7 @@
 
 			if( $load_monitor->alert_level >= NOTIFICATIONS_THRESHOLD ){
 				if( $slack_counter < 1 ){
-					$slacked_this_scan = slack_handler( 'D19LY2ZFX' );
+					$slacked_this_scan = slack_handler( 'D19LY2ZFX', $load_monitor->alert_level .' - '. NOTIFICATIONS_THRESHOLD );
 				}
 
 				if( $email_counter < 1 ){
@@ -102,3 +102,5 @@
 			delete_scans();
 		}
 	}
+
+	$loadmon = new Load_Monitor();

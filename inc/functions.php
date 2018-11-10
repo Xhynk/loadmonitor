@@ -108,7 +108,7 @@
 	 * @param double $fifteen_min_avg - Fifteen Minute Load Average
 	 * @param bool $sent_slack - Was a Slack Message sent this scan?
 	 * @param bool $sent_email - Was an Email sent this scan?
-	 * @return mixed - Number of inserted rows or false
+	 * @return bool - true on success, false on failure
 	 */
 	function save_scan( $cpu_usage = 0, $one_min_avg = 0, $five_min_avg = 0, $fifteen_min_avg = 0, $sent_slack = false, $sent_email = false ){
 		/* Considuer "ALTER TABLE ". DB_TABLE ." AUTO_INCREMENT = 0;"
@@ -128,7 +128,7 @@
 			$results = $query->get_result();
 			$query->close();
 			
-			return ( $results->affected_rows === 0 ) ? false : $results->affected_rows;
+			return true;
 		} else {
 			return false;
 		}
@@ -178,13 +178,13 @@
 
 		$payload = array();
 
-		if( !$message_override ){
-			$payload['text']  = slackmoji()." *$load_monitor->status Server Load*";
-			$payload['text'] .= "The One Minute Load Average for *$load_monitor->hostname* is *$load_monitor->status*, running at `$load_monitor->cpu_usage%` capacity.";
+		if( !$message ){
+			$payload['text']  = slackmoji()." *$load_monitor->status Server Load*\r\n";
+			$payload['text'] .= "The One Minute Load Average for *$load_monitor->hostname* is *$load_monitor->status*, running at `$load_monitor->cpu_usage%` capacity.\r\n";
 			$payload['text'] .= "The maximimum stable load is `$load_monitor->cores`, and is currently: `$load_monitor->one_min_avg`.\r\n";
 			$payload['text'] .= "<https://$load_monitor->hostname/whm/|WHM Login>	|	<https://manage.liquidweb.com/|LW Manage>	|	<mailto:support@liquidweb.com|Email Support>";
 		} else {
-			$payload['text'] = $message_override;
+			$payload['text'] = $message;
 		}
 
 		if( $channel ){

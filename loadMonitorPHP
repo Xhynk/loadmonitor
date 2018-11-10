@@ -17,11 +17,10 @@ LOAD_FIFTEEN=$( awk '{print $3}' < /proc/loadavg )            #Get Fifteen Minut
 TRIGGER_ONE=$( echo "$LOAD_ONE > $CORES" | bc )               #Determine if One Minute Average has Spiked to >100%
 TRIGGER_FIFTEEN=$( echo "$LOAD_FIFTEEN > $CORES * 2.5" | bc ) #See if Fifteen Min Avg Sustained to >250% (20)
 
-
 # If One Min Avg has spiked > 100% of usage
 #if (( "$TRIGGER_ONE" > 0 ))
 #then
-  /usr/bin/php -f /home/thirdmkt/loadMonitorHandler.php hostname="$HOST" cores="$CORES" one_min_avg="$LOAD_ONE" five_min_avg="$LOAD_FIVE" fifteen_min_avg="$LOAD_FIFTEEN" key="cdff.1070bdaacf"
+  /usr/bin/php -f /home/thirdmkt/loadmonitor/loadMonitorHandler.php hostname="$HOST" cores="$CORES" one_min_avg="$LOAD_ONE" five_min_avg="$LOAD_FIVE" fifteen_min_avg="$LOAD_FIFTEEN" key="cdff.1070bdaacf"
 #else
-#  /usr/bin/php -f /home/thirdmkt/loadMonitorHandler.php hostname="$HOST" cores="$CORES" key="cdff.1070bdaacf"
+#  /usr/bin/php -f /home/thirdmkt/loadmonitor/loadMonitorHandler.php hostname="$HOST" cores="$CORES" key="cdff.1070bdaacf"
 #fi
