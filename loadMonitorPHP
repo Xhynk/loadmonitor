@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#Round to 2 Decimal Places
+round(){
+echo $( printf %.$2f $(echo "scale=$2;(((10^$2)*$1)+0.5)/(10^$2)" | bc ))
+}
+
+#Define VARs for Notifications
+HOST=$(hostname)                                              #Get hostname for Alert
+CORES=$( grep -c ^processor /proc/cpuinfo )                   #Get current amount of CPU Cores (8)
+LOAD_ONE=$( awk '{print $1}' < /proc/loadavg )                #Get One Minute Load Average
+#PERC_ONE=$( echo $(round $LOAD_ONE/$CORES*100 2) )            #Get One Min Usage Percentage
+LOAD_FIVE=$( awk '{print $2}' < /proc/loadavg )               #Get Five Minute Load Average
+#PERC_FIVE=$( echo $(round $LOAD_FIVE/$CORES*100 2) )          #Get Five Min Usage Percentage
+LOAD_FIFTEEN=$( awk '{print $3}' < /proc/loadavg )            #Get Fifteen Minute Load Average
+#PERC_FIFTEEN=$( echo $(round $LOAD_FIFTEEN/$CORES*100 2) )    #Get Fifteen Min Usage Percentage
+TRIGGER_ONE=$( echo "$LOAD_ONE > $CORES" | bc )               #Determine if One Minute Average has Spiked to >100%
+TRIGGER_FIFTEEN=$( echo "$LOAD_FIFTEEN > $CORES * 2.5" | bc ) #See if Fifteen Min Avg Sustained to >250% (20)
+
+
+# If One Min Avg has spiked > 100% of usage
+#if (( "$TRIGGER_ONE" > 0 ))
+#then
+  /usr/bin/php -f /home/thirdmkt/loadMonitorHandler.php hostname="$HOST" cores="$CORES" one_min_avg="$LOAD_ONE" five_min_avg="$LOAD_FIVE" fifteen_min_avg="$LOAD_FIFTEEN" key="cdff.1070bdaacf"
+#else
+#  /usr/bin/php -f /home/thirdmkt/loadMonitorHandler.php hostname="$HOST" cores="$CORES" key="cdff.1070bdaacf"
+#fi
