@@ -87,11 +87,11 @@
 
 			if( $load_monitor->alert_level >= NOTIFICATIONS_THRESHOLD ){
 				if( $slack_counter < 1 ){
-					$slacked_this_scan = slack_handler( 'D19LY2ZFX' );
+					$slacked_this_scan = slack_handler();
 				}
 
 				if( $email_counter < 1 ){
-					$emailed_this_scan = email_handler( array( 'demchak.alex@gmail.com' ) );
+					$emailed_this_scan = email_handler( array( 'demchak.alex@gmail.com', 'tfahndrich@gmail.com' ) );
 				}
 			}
 
