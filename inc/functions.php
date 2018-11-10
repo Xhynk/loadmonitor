@@ -223,7 +223,7 @@
 			}
 		}
 
-		$header = "From: Load Monitor <loadMonitorPHP@web01.redbrickdigital.net>\r\n"; 
+		$header = "From: Load Monitor <loadMonitorPHP@{$load_monitor->hostname}>\r\n"; 
 		$header.= "MIME-Version: 1.0\r\n"; 
 		$header.= "Content-Type: text/html; charset=ISO-8859-1\r\n"; 
 		$header.= "X-Priority: 1\r\n"; 
