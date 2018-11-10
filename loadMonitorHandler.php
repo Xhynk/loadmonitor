@@ -87,7 +87,7 @@
 
 			if( $load_monitor->alert_level >= NOTIFICATIONS_THRESHOLD ){
 				if( $slack_counter < 1 ){
-					$slacked_this_scan = slack_handler( 'D19LY2ZFX', $load_monitor->alert_level .' - '. NOTIFICATIONS_THRESHOLD );
+					$slacked_this_scan = slack_handler( 'D19LY2ZFX' );
 				}
 
 				if( $email_counter < 1 ){
