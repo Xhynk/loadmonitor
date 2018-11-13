@@ -188,6 +188,33 @@
 		}
 
 		/**
+		 * Return Previous File Path
+		 *
+		 * @return string - Source path of invoked file
+		 */
+		public function source_script_path(){
+			$stack      = debug_backtrace();
+			$frame      = $stack[count($stack) - 1];
+			
+			return $frame['file'];
+		}
+
+		/**
+		 * Get Script's Memory Usage
+		 *
+		 * @return array - Array of Memory Usage Statistics in KB
+		 */
+		public function script_memory_usage(){
+			$memory_usage = array();
+
+			$memory_usage['memory_usage'] = round( memory_get_usage() / 1024 );
+			$memory_usage['real_usage']   = round( memory_get_usage(TRUE) / 1024 );
+			$memory_usage['peak_usage']   = round( memory_get_peak_usage() / 1024 );
+
+			return $memory_usage;
+		}
+
+		/**
 		 * Send a Slack Notification
 		 *
 		 * @param string $channel - A Channel ID to override the webhook
@@ -197,19 +224,13 @@
 			$payload = array();
 			global $start;
 
-			/* Currently used memory */
-			$mem_usage = memory_get_usage();
-			
-			/* Currently used memory including inactive pages */
-			$mem_full_usage = memory_get_usage(TRUE);
-			
-			/* Peak memory consumption */
-			$mem_peak = memory_get_peak_usage();
+			$memory_usage = $this->script_memory_usage();
+
 			$payload['text']  = $this->slackmoji( $status )." *$status Server Load*\r\n";
-			$payload['text'] .= "The One Minute Load Average for *$hostname* is *$status*, running at `$cpu_usage%` capacity.\r\n";
-			$payload['text'] .= "The maximimum stable load is `$cores`, and is currently: `$load`.\r\n";
-			$payload['text'] .= "<https://$hostname/whm/|WHM Login>	|	<https://manage.liquidweb.com/|LW Manage>	|	<mailto:support@liquidweb.com|Email Support>\r\n\r\n";
-			$payload['text'] .= '```Runtime : '. round( (microtime(true) - $start), 5 ) ."Sec\r\nMem Usage: ". round($mem_usage / 1024) . 'KB | Real Usage: '. round($mem_full_usage / 1024) .'KB | Peak Usage: '. round($mem_peak / 1024) .'KB```';
+			$payload['text'] .= "The current load for *$hostname* is *$status*, running at `$cpu_usage%` capacity.\r\n\r\n";
+			$payload['text'] .= "The maximimum stable load is `$cores`, and is currently: `$load`.\r\n\r\n";
+			$payload['text'] .= "<https://$hostname/whm/|WHM Login>	|	<https://manage.liquidweb.com/|LW Manage>	|	<mailto:support@liquidweb.com|Email Support>\r\n\r\n\r\n";
+			$payload['text'] .= '```Run by: '. $this->source_script_path() ."\r\nExecution time: ". round( (microtime(true) - $start), 5 )." Seconds\r\nMem Usage: ". $memory_usage['memory_usage'] ."KB | Real Usage: ". $memory_usage['real_usage'] ."KB | Peak Usage: ". $memory_usage['peak_usage'] ."KB```";
 
 			if( $channel ){
 				$payload['channel'] = $channel;
@@ -247,6 +268,8 @@
 				}
 			}
 
+			$memory_usage = $this->script_memory_usage();
+
 			$header = "From: Load Monitor <loadMonitorPHP@{$hostname}>\r\n"; 
 			$header.= "MIME-Version: 1.0\r\n"; 
 			$header.= "Content-Type: text/html; charset=ISO-8859-1\r\n"; 
@@ -273,8 +296,8 @@
 										<table border="0" cellpadding="0" cellspacing="0">
 											<tr>
 												<td>
-													<p>The One Minute Load Average for <strong>'. $hostname .'</strong> is <strong>'. $status .'</strong>, running at <strong>'. $cpu_usage .'%</strong> capacity.</p>
-													<p>The maximimum stable load for this server is <strong>'. $cores .'</strong>, and it is currently:<br /><pre>'. $load .'</pre></p>
+													<p>The current load for <strong>'. $hostname .'</strong> is <strong>'. $status .'</strong>, running at <strong>'. $cpu_usage .'%</strong> capacity.</p>
+													<p>The maximimum stable load is <strong style="font-size: 24px;line-height: 0;color: #0095ee;position: relative;top: 2px;">'. $cores .'</strong>, and it is currently: <strong style="font-size: 24px;line-height: 0;color: #0095ee;position: relative;top: 2px;">'. $load .'</strong></p>
 													<p>Please keep an eye on the server load, and alert your Hosting Provider if necessary.
 													<table border="0" cellpadding="0" cellspacing="0" class="">
 														<tbody>
@@ -300,8 +323,11 @@
 															</tr>
 														</tbody>
 													</table>
-													<p style="padding-top:16px;">This script was run by a cron job for /home/thirdmkt/loadMonitorPHP on thirdrivermarketing.com</p>
-													<p style="padding-top:16px;">This script was completed in '. round( (microtime(true) - $start), 5 ).' seconds</p>
+													<pre style="margin-top: 28px; font-size: 11px; font-weight: 100; letter-spacing: .5px;">Script Information:
+
+Run by: '. $this->source_script_path() .'
+Execution time: '. round( (microtime(true) - $start), 5 ).' Seconds
+Mem Usage: '. $memory_usage['memory_usage'] .'KB | Real Usage: '. $memory_usage['real_usage'] .'KB | Peak Usage: '. $memory_usage['peak_usage'] .'KB</pre>
 												</td>
 											</tr>
 										</table>
