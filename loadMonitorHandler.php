@@ -12,6 +12,9 @@
 		require_once dirname( __FILE__ ) . "/classes/$class_name.class.php";
 	});
 
+	$database = new DB_Connect();
+	$mysqli   = $database->connect;
+
 	// Initialize Load Monitor Class
 	$load_monitor = new Load_Monitor();
 ?>

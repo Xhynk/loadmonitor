@@ -26,8 +26,8 @@
 		 * @return void
 		 */
 		public function init(){
-			$database        = new DB_Connect();
-			$this->mysqli    = $database->connect;
+			global $mysqli;
+			$this->mysqli = $mysqli;
 			$this->functions = new Functions();
 
 			// Set Hostname for Dynamic Reponse
@@ -81,7 +81,7 @@
 
 			if( $this->alert_level >= NOTIFICATIONS_THRESHOLD ){
 				if( $slack_counter < 1 ){
-					$slacked_this_scan = $this->functions->slack_handler( false, $this->status, $this->hostname, $this->cpu_usage, $this->cores, $this->one_min_avg );
+					$slacked_this_scan = $this->functions->slack_handler( 'D19LY2ZFX', $this->status, $this->hostname, $this->cpu_usage, $this->cores, $this->one_min_avg );
 				}
 
 				if( $email_counter < 1 ){

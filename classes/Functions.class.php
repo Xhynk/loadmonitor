@@ -205,7 +205,6 @@
 			
 			/* Peak memory consumption */
 			$mem_peak = memory_get_peak_usage();
-			
 			$payload['text']  = $this->slackmoji( $status )." *$status Server Load*\r\n";
 			$payload['text'] .= "The One Minute Load Average for *$hostname* is *$status*, running at `$cpu_usage%` capacity.\r\n";
 			$payload['text'] .= "The maximimum stable load is `$cores`, and is currently: `$load`.\r\n";
